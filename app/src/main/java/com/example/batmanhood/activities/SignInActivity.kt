@@ -1,8 +1,11 @@
 package com.example.batmanhood.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import com.example.batmanhood.R
+import com.example.batmanhood.models.User
 import kotlinx.android.synthetic.main.activity_introduction.*
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
@@ -13,7 +16,7 @@ class SignInActivity : BaseActivity() {
 
         setupActionBar()
 
-        button_sign_in_intro.setOnClickListener {
+        btn_sign_in.setOnClickListener {
             signInRegisteredUser()
         }
     }
@@ -42,7 +45,7 @@ class SignInActivity : BaseActivity() {
         // Here we get the text from editText and trim the space
         val email: String = et_email.text.toString().trim { it <= ' ' }
         val password: String = et_password.text.toString().trim { it <= ' ' }
-
+/*
         if (validateForm(email, password)) {
             // Show the progress dialog.
             showProgressDialog(resources.getString(R.string.please_wait))
@@ -61,7 +64,7 @@ class SignInActivity : BaseActivity() {
                         ).show()
                     }
                 }
-        }
+        }*/
     }
 
     /**

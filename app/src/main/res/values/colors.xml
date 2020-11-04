@@ -12,5 +12,6 @@
     <color name="primary_text_color">#FF000000</color>
     <color name="secondary_text_color">#FFFFFFFF</color>
 
+    <color name="snackbar_error_color">#F72400</color>
 
 </resources>
