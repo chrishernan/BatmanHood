@@ -1,15 +1,25 @@
 package com.example.batmanhood.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Patterns
+import android.widget.Toast
+import com.example.batmanhood.IO.StockAndIndexApiHelper
 import com.example.batmanhood.R
+import com.example.batmanhood.IO.database.FirestoreClass
 import com.example.batmanhood.models.User
-import kotlinx.android.synthetic.main.activity_introduction.*
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_sign_in.*
+import java.util.regex.Pattern
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SignInActivity : BaseActivity() {
+    //must do field injection for classes
+    @Inject lateinit var stockAndIndexApiHelper: StockAndIndexApiHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
@@ -17,7 +27,7 @@ class SignInActivity : BaseActivity() {
         setupActionBar()
 
         btn_sign_in.setOnClickListener {
-            signInRegisteredUser()
+            signInRegisteredUser(stockAndIndexApiHelper)
         }
     }
 
@@ -31,7 +41,7 @@ class SignInActivity : BaseActivity() {
         val actionBar = supportActionBar
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_black_color_back_24dp)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_white_color_back_24dp)
         }
 
         toolbar_sign_in_activity.setNavigationOnClickListener { onBackPressed() }
@@ -41,12 +51,12 @@ class SignInActivity : BaseActivity() {
     /**
      * Function to Sign in a User that has been registered for the app
      */
-    private fun signInRegisteredUser() {
+    private fun signInRegisteredUser(stockAndIndexApiHelper: StockAndIndexApiHelper) {
         // Here we get the text from editText and trim the space
         val email: String = et_email.text.toString().trim { it <= ' ' }
         val password: String = et_password.text.toString().trim { it <= ' ' }
-/*
-        if (validateForm(email, password)) {
+
+        if (validateEmail(email) && validatePassword(password)) {
             // Show the progress dialog.
             showProgressDialog(resources.getString(R.string.please_wait))
 
@@ -55,8 +65,9 @@ class SignInActivity : BaseActivity() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // Calling the FirestoreClass signInUser function to get the data of user from database.
-                        FirestoreClass().loadUserData(this@SignInActivity)
+                        FirestoreClass(stockAndIndexApiHelper).loadUserData(this@SignInActivity)
                     } else {
+                        hideProgressDialog()
                         Toast.makeText(
                             this@SignInActivity,
                             task.exception!!.message,
@@ -64,18 +75,33 @@ class SignInActivity : BaseActivity() {
                         ).show()
                     }
                 }
-        }*/
+        }
     }
 
-    /**
-     * Function that will validate the form entries for email and password
-     */
-    private fun validateForm(email: String, password: String): Boolean {
-        return if (TextUtils.isEmpty(email)) {
-            showErrorSnackBar("Please enter email.")
+    //Validates whether the email address is not empty or has the correct format
+    private fun validateEmail(email: String) : Boolean{
+        return if(TextUtils.isEmpty(email)){
+            showErrorSnackBar("Please enter an email")
             false
-        } else if (TextUtils.isEmpty(password)) {
-            showErrorSnackBar("Please enter password.")
+        } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            showErrorSnackBar("Please enter a correctly formatted email address")
+            false
+        } else {
+            true
+        }
+    }
+
+    //Validates the password is not empty or fits our desired parameters
+    private fun validatePassword(password: String): Boolean {
+        val pattern: String = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=()-])(?=\\S+\$).{8,20}\$"
+        val passwordPattern = Pattern.compile(pattern)
+        return if(TextUtils.isEmpty(password)){
+            showErrorSnackBar("Please enter a password")
+            false
+        } else if(!passwordPattern.matcher(password).matches()){
+            showErrorSnackBar("Please enter a password with at least 1 digit," +
+                    "one lowercase letter, one uppercase letter, and one special character" +
+            "Password must also have a length between 8 and 20 characters")
             false
         } else {
             true
@@ -87,11 +113,12 @@ class SignInActivity : BaseActivity() {
      * has been authenticated
      */
     fun signInSuccess(user: User) {
-
         hideProgressDialog()
-
         startActivity(Intent(this@SignInActivity, MainActivity::class.java))
         this.finish()
     }
 
+    override fun onStop() {
+        super.onStop()
+    }
 }

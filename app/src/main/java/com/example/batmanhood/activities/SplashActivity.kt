@@ -52,6 +52,6 @@ class SplashActivity : AppCompatActivity() {
 
 
             finish() // Call this when your activity is done and should be closed.
-        }, 2500)
+        }, 500)
     }
 }

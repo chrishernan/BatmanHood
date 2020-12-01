@@ -11,7 +11,9 @@ data class User(
         val image: String = "",
         val mobile: Long = 0,
         val fcmToken: String = "",
-        var selected: Boolean = false
+        val crypto_list: MutableList<String> = mutableListOf("BTC", "ETH"),
+        var stock_list: MutableList<String> = mutableListOf("AAPL", "MSFT", "AMZN"),
+        val index_list: MutableList<String> = mutableListOf(".INX", ".IXIC", ".DJI")
 ) : Parcelable {
     constructor(source: Parcel) : this(
             source.readString()!!,
@@ -19,7 +21,10 @@ data class User(
             source.readString()!!,
             source.readString()!!,
             source.readLong(),
-            source.readString()!!
+            source.readString()!!,
+            source.createStringArrayList()!!,
+            source.createStringArrayList()!!,
+            source.createStringArrayList()!!
     )
 
     override fun describeContents() = 0
@@ -31,6 +36,9 @@ data class User(
         writeString(image)
         writeLong(mobile)
         writeString(fcmToken)
+        writeStringList(crypto_list)
+        writeStringList(stock_list)
+        writeStringList(index_list)
     }
 
     companion object {
