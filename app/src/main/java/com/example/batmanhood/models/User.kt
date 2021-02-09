@@ -11,9 +11,9 @@ data class User(
         val image: String = "",
         val mobile: Long = 0,
         val fcmToken: String = "",
-        val crypto_list: MutableList<String> = mutableListOf("BTC", "ETH"),
-        var stock_list: MutableList<String> = mutableListOf("AAPL", "MSFT", "AMZN"),
-        val index_list: MutableList<String> = mutableListOf(".INX", ".IXIC", ".DJI")
+        val crypto_list: MutableList<String> = mutableListOf("btc", "eth"),
+        var stock_list: MutableList<String> = mutableListOf("aapl", "msft", "amzn"),
+        val index_list: MutableList<String> = mutableListOf(".inx", ".ixic", ".dji")
 ) : Parcelable {
     constructor(source: Parcel) : this(
             source.readString()!!,

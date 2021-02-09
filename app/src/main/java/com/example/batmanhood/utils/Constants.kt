@@ -11,6 +11,6 @@ object Constants {
     const val PASSWORD_UPPER_CASE_PATTERN: String = "(?=.*[A-Z])"
     const val PASSWORD_SPECIAL_CHARACTER_PATTERN : String = """(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\])"""
     //Test URL
-    const val IEX_BASE_URL = "https://sandbox.iexapis.com/stable/"
+    const val IEX_BASE_URL = "https://sandbox.iexapis.com/"
     const val IEX_TOKEN = "Tpk_e9c11e2d2f0342e2b4c548e70d21a510"
 }

@@ -2,18 +2,25 @@ package com.example.batmanhood.IO.database
 
 import android.app.Activity
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.batmanhood.IO.StockAndIndexApiHelper
 import com.example.batmanhood.activities.*
+import com.example.batmanhood.models.AutofillCompany
+import com.example.batmanhood.models.RealTimeStockQuote
 import com.example.batmanhood.models.User
 import com.example.batmanhood.utils.Constants
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.squareup.okhttp.Dispatcher
 import kotlinx.coroutines.*
-import yahoofinance.Stock
-import yahoofinance.YahooFinance
-import java.io.IOException
+import kotlinx.coroutines.tasks.await
 import java.lang.Exception
+import kotlin.system.exitProcess
 
 /**
  * This is our repository class(pattern) since we are using firebase for database and authentication.
@@ -24,14 +31,62 @@ import java.lang.Exception
 class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
 
     private val mFireStore = FirebaseFirestore.getInstance()
-    val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private  var mStockList: HashMap<String, String> = hashMapOf<String, String>()
-    private  var mCryptoList: HashMap<String, Stock> = hashMapOf<String, Stock>()
-    private  var mIndexList: HashMap<String, Stock> = hashMapOf<String, Stock>()
     private lateinit var mUserName: String
+    val cpuScope = CoroutineScope(Dispatchers.Default)
+    val networkingScope = CoroutineScope(Dispatchers.IO)
+    private var currentUserID = ""
+
+    fun getCurrentUser() : MutableLiveData<User>{
+        var loggedInUser: User
+        loggedInUser = mFireStore.collection(Constants.USERS)
+                .document(getCurrentUserID())
+                .get()
+                .addOnSuccessListener { document ->
+                    Log.d("SUCCESS_GETTING_USER","Successfully retrieved user from firebase")
+                }.addOnFailureListener{ e ->
+                    Log.e(
+                            "FAILED_TO_GET_USER",
+                            "Error while getting logged in details -> ${e.toString()}"
+                    )
+                }.result?.toObject(User::class.java)!!
+        Log.d("LOGGED_IN_USER","right before logged in user is returned ${loggedInUser.name} -")
+        var liveDataUser = MutableLiveData<User>()
+        liveDataUser.postValue(loggedInUser)
+        return liveDataUser
+    }
+
+    suspend fun getCurrentUserCoroutineImplementation() : User? {
+            val loggedInUser = try {
+                mFireStore.collection(Constants.USERS)
+                        .document(getCurrentUserID())
+                        .get()
+                        .await()
+            } catch(e: Exception) {
+                Log.e("EXCEPTION_KTX_GETUSER","Exception retrieving user in Coroutine implementation => ${e.toString()}")
+                null
+            }
+        return loggedInUser?.toObject(User::class.java)
+    }
+
+    fun FirebaseAuth.newFirebaseAuthStateLiveData() {
+
+    }
+
+    private fun getFirebaseDocumentSnapshot(userId : String) : Task<DocumentSnapshot> = runBlocking {
+        Log.d("BEFORE_DOCUMENT_GET","right before with context colleciton document")
+        withContext(Dispatchers.IO) {
+            mFireStore.collection(Constants.USERS)
+                    .document(userId)
+                    .get()
+                    .addOnCompleteListener {
+                        Log.d("TEST_FIREBASE",it.toString())
+                    }
+        }
+    }
 
     /**
-     * A function to make an entry of the registered user in the firestore database.
+     * Makes an entry of the registered user in the firestore database with [userInfo]
+     * Executes code sequences based on [activity]
      */
     fun registerUser(activity: RegisterActivity, userInfo: User) {
 
@@ -50,30 +105,24 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
                     Log.e(
                             activity.javaClass.simpleName,
                             "Error writing document",
-                            e
-                    )
+                            e)
                 }
     }
 
-    //function used retrieve data from firebase database
+    /**
+     * Retrieves user retrieve data from firebase database
+     */
     fun loadUserData(activity: Activity) {
         mFireStore.collection(Constants.USERS)
             .document(getCurrentUserID())
             .get()
             .addOnSuccessListener { document ->
                 Log.e(activity.javaClass.simpleName,document.toString())
-                val LoggedInUser = document.toObject(User::class.java)!!
+                val loggedInUser = document.toObject(User::class.java)!!
 
                 when(activity){
                     is SignInActivity -> {
-                        activity.signInSuccess(LoggedInUser)
-                    }
-                    is MainActivity ->{
-                        ioScope.launch {
-                            var user_stocks = fetchStocks(LoggedInUser)
-                            //todo change configureUserAssetList to display stocks on MainACtivity
-                           // activity.configureUserAssetList(LoggedInUser)
-                        }
+                        activity.signInSuccess(loggedInUser)
                     }
                     //is MyProfileActivity -> { }
                 }
@@ -83,9 +132,6 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
                     is SignInActivity -> {
                         activity.hideProgressDialog()
                     }
-                    is MainActivity -> {
-                        activity.showErrorSnackBar("Error retrieving User preferences. Please restart app")
-                    }
                 }
                 Log.e(
                     activity.javaClass.simpleName,
@@ -93,47 +139,101 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
                 )
             }
 
-
     }
 
     /**
-     * This
+     * This takes in a [user] and returns all the users stocks in a LinkedHashMap for rendering
      */
-    private suspend fun fetchStocks(user: User) {
-
-        withContext(Dispatchers.IO) {
-            try {
-                for(stock in user.stock_list){
-                    //mStockList.put(stock, stockAndIndexFetcher .getRealTimeStockQuoteAllFields(stock,Constants.IEX_TOKEN).toString())
-                    var stockResponse = stockAndIndexFetcher
-                            .getRealTimeStockQuoteAllFields(stock,Constants.IEX_TOKEN)
-                    Log.d("STOCK_HISTORY", stockResponse.toString())
-
-                }
-            } catch (e : Exception) {
-                Log.e("STOCK_EXCEPTION",e.toString())
-            }
+    suspend fun fetchUserStocks(user: MutableLiveData<User?>) : LinkedHashMap<String,String>{
+        //val listOfLiveData: MutableList<MutableLiveData<RealTimeStockQuote>> = mutableListOf()
+        //val stockLiveData: MutableLiveData<RealTimeStockQuote> = MutableLiveData()
+        var listOfRealTimeQuotes: HashMap<String, HashMap<String, RealTimeStockQuote>>
+        var mapOfUserStockSymbolAndPrice: LinkedHashMap<String, String>
+        //var liveDataMap = MutableLiveData<LinkedHashMap<String, String>>()
+        var userStockJob = networkingScope.async {
+            stockAndIndexFetcher.getMultipleStockQuotes(
+                    user.value!!.stock_list!!.joinToString(separator = ","),
+                    "quote",
+                    Constants.IEX_TOKEN)
         }
+        var userStockResponse = userStockJob.await()
+        var parseUserStockResponse = cpuScope.async {
+            parseUserStocks(userStockResponse)
+        }
+        mapOfUserStockSymbolAndPrice = parseUserStockResponse.await()
+        Log.e("SUCCESS_FETCH_USR_STCKS",mapOfUserStockSymbolAndPrice.keys.toString())
+        //liveDataMap.postValue( mapOfUserStockSymbolAndPrice)
+        return mapOfUserStockSymbolAndPrice
+    }
+
+    /*
+     * This
+     */
+    fun fetchCrypto(currentUser: User) {
+
     }
 
     /**
-     * This
+     *
      */
-    private suspend fun fetchCrypto(currentUser: User) {
+    fun fetchIndexes(currentUser: User) {
 
     }
-
-
 
     /**
-     * This
+     * This is used for our autocomplete functionality
      */
-    private suspend fun fetchIndexes(currentUser: User) {
-
+    suspend fun retrieveAllUSCompanies() : HashMap<String,String>{
+        var americanCompaniesMap : HashMap<String,String> = hashMapOf()
+        //var liveDataAmericanCompaniesMap = MutableLiveData<HashMap<String,String>>()
+        val retrievingAmericanCompaniesJob = networkingScope.async {
+            stockAndIndexFetcher.getAllUSCompanies(Constants.IEX_TOKEN)
+        }
+        try {
+            var tempAwait = retrievingAmericanCompaniesJob.await()
+            Log.e("AMERICAN_COMPANY_AWAIT","american companies response => $tempAwait")
+        } catch(exception : Exception) {
+            Log.e("EXCEPTION_AWAIT_US","ExceptionTag: ${exception.toString()}")
+        }
+        var americanCompanies = retrievingAmericanCompaniesJob.await()
+        val parsedJsonJob = cpuScope.async {
+            parseAutofillJSON(americanCompanies)
+        }
+        try{
+            parsedJsonJob.await()
+            Log.e("US_COMP_PARSED_SUCCESS","Successfully parsed all americna companies.")
+        } catch (exception: Exception) {
+            Log.e("EXCEPTION_PARSE_US","ExceptionTag: ${exception.toString()}")
+        }
+        americanCompaniesMap = parsedJsonJob.await()
+        Log.e("SUCCESS_STOCK_US_COMP",americanCompaniesMap.keys.toString())
+        //liveDataAmericanCompaniesMap.postValue(americanCompaniesMap)
+        return americanCompaniesMap
     }
 
+    private suspend fun parseAutofillJSON(listOfCompanies : List<AutofillCompany>)
+            : HashMap<String,String> {
+        var companySymbolAndNameMap : HashMap<String,String> = hashMapOf()
+            listOfCompanies.map {
+                companySymbolAndNameMap.put(it.symbol.toString(),it.name.toString())
+            }
+        return companySymbolAndNameMap
+    }
 
-
+    /**
+     * This parses through all the RealTimeStockQuotes and returns only two argumens for now
+     * @returns Stock symbol and current stock price
+     * todo figure out a way to make the database sort your assets alphabetically
+     */
+    private suspend fun  parseUserStocks(listOfRealTimeQuotes : HashMap<String,HashMap<String,RealTimeStockQuote>> )
+    : LinkedHashMap<String, String> {
+        var linkedHashMap = LinkedHashMap<String, String>()
+            listOfRealTimeQuotes.values.map {
+                it.get("quote")?.let { it1 -> linkedHashMap.put(it1.symbol.toString(), it1.latestPrice.toString()) }
+            }
+        Log.e("SUCCESS_PARSE_USR_STCKS","Stock successfully parsed => /n ${linkedHashMap.get("TSLA")}")
+        return linkedHashMap
+    }
 
     /**
      * This function will fetch user data for main activity to use to render
@@ -150,13 +250,16 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         val currentUser = FirebaseAuth.getInstance().currentUser
 
         // A variable to assign the currentUserId if it is not null or else it will be blank.
-        var currentUserID = ""
         if (currentUser != null) {
             currentUserID = currentUser.uid
         }
-
         return currentUserID
     }
 }
 
+//TODO figure out what this is for?
+sealed class FirebaseAuthUserState
+data class userSignedIn(val user: FirebaseUser) : FirebaseAuthUserState()
+object UserSignedOut : FirebaseAuthUserState()
+object UserSignedIn : FirebaseAuthUserState()
 

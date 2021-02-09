@@ -1,10 +1,19 @@
 package com.example.batmanhood.IO
 
+import com.example.batmanhood.models.AutofillCompany
+import com.example.batmanhood.models.RealTimeStockQuote
 import com.example.batmanhood.utils.Constants
+import kotlinx.coroutines.Deferred
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.CallAdapter
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -15,21 +24,27 @@ interface iexApiService {
      *  todo probably add 52 week average,etc so that we can try and get as much info in one request
      *  todo or maybe just get everything and filter if that's not possible
      */
-    @GET("stock/{symbol}/quote/{field}")
+    @GET("stable/stock/{symbol}/quote/{field}")
     suspend fun getRealTimeStockQuote(
             @Path("symbol") stockSymbol: String,
             @Path("field") field: String,
             @Query("token") apiToken: String)
 
-    @GET("stock/{symbol}/quote")
+    @GET("stable/stock/{symbol}/quote")
     suspend fun getRealTimeStockQuoteAllFields(
             @Path("symbol") stockSymbol: String,
-            @Query("token") apiToken: String)
+            @Query("token") apiToken: String) : RealTimeStockQuote
+
+    @GET ("stable/stock/market/batch")
+    suspend fun getMultipleStockQuotes(
+            @Query("symbols") symbols : String,
+            @Query("types") types: String,
+            @Query("token") apiToken: String) : HashMap<String,HashMap<String,RealTimeStockQuote>>
 
     /**FTD
      * This gives a 15 minute price. Not sure what it can be used for yet
      */
-    @GET("stock/{symbol}/delayed-quote")
+    @GET("stable/stock/{symbol}/delayed-quote")
     suspend fun getDelayedStockQuote(
             @Path("symbol") stockSymbol: String,
             @Query("token") apiToken: String)
@@ -40,7 +55,7 @@ interface iexApiService {
      *     1 hour range, 1 day, 1 week, 1 month, 3 months, 6 months, 1 year, 2 years, 3 years, 5 years,
      *     10 years, MAX
      */
-    @GET("stock/{symbol}/chart/{range}/{date}")
+    @GET("stable/stock/{symbol}/chart/{range}/{date}")
     suspend fun getHistoricalStockPrices(
             @Path("symbol") stockSymbol: String,
             @Path("range") priceRangeOfPrices: String,
@@ -53,7 +68,7 @@ interface iexApiService {
      *  It uses intraday endpoint.
      */
 
-    @GET("stock/{symbol}/intraday-prices")
+    @GET("stable/stock/{symbol}/intraday-prices")
     suspend fun getIntradayStockPrices(
             @Path("symbol") stockSymbol: String,
             @Query("token") apiToken: String
@@ -62,7 +77,7 @@ interface iexApiService {
     /**
      * Similar to getRealTimeStockQuote, but instead of only getting one field, it will get everything
      */
-    @GET("stock/{symbol}/quote/")
+    @GET("stable/stock/{symbol}/quote/")
     suspend fun getOtherStockInformation(
             @Path("symbol") stockSymbol: String,
             @Query("token") apiToken: String
@@ -72,15 +87,19 @@ interface iexApiService {
      * This method will be used to retrieve ETF information that correlates to index performance.
      * Due to cost of retrieving actual index performance data, we will use ETF which are free.
      */
-    @GET("stock/{symbol}/company")
+    @GET("stable/stock/{symbol}/company")
     suspend fun getETFInformation(
             @Path("symbol") etfSymbol: String,
             @Query("token") apiToken: String
     )
 
+    @GET("beta/ref-data/symbols")
+    suspend fun getAllUSCompanies(
+        @Query("token") apiToken: String
+    ) : List<AutofillCompany>
+
     //static implementation of create() method
     companion object{
-
         fun create() : iexApiService {
             val logging  = HttpLoggingInterceptor()
             logging.setLevel(HttpLoggingInterceptor.Level.BODY)

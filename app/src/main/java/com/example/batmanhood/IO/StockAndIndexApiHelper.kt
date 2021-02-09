@@ -1,20 +1,28 @@
 package com.example.batmanhood.IO
 
+import com.example.batmanhood.models.RealTimeStockQuote
 import retrofit2.http.Path
 import retrofit2.http.Query
 import javax.inject.Inject
 
 
 class StockAndIndexApiHelper @Inject constructor(private val iexApiService: iexApiService){
+
      suspend fun getRealTimeStockQuote(
              stockSymbol: String,
              field: String,
-             apiToken: String) = iexApiService
+             apiToken: String)= iexApiService
                 .getRealTimeStockQuote(stockSymbol,field,apiToken)
 
      suspend fun getRealTimeStockQuoteAllFields(
              stockSymbol: String,
              apiToken: String) = iexApiService.getRealTimeStockQuoteAllFields(stockSymbol,apiToken)
+
+     suspend fun getMultipleStockQuotes(
+             symbols : String,
+             types: String,
+             apiToken: String) : HashMap<String,HashMap<String,RealTimeStockQuote>>
+     = iexApiService.getMultipleStockQuotes(symbols, types, apiToken)
 
      suspend fun getDelayedStockQuote(
              stockSymbol: String,
@@ -42,4 +50,8 @@ class StockAndIndexApiHelper @Inject constructor(private val iexApiService: iexA
              etfSymbol: String,
              apiToken: String) = iexApiService
                 .getETFInformation(etfSymbol,apiToken)
+
+    suspend fun getAllUSCompanies(
+        apiToken: String) =iexApiService.getAllUSCompanies(apiToken)
+
 }
