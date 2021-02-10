@@ -161,7 +161,7 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
             parseUserStocks(userStockResponse)
         }
         mapOfUserStockSymbolAndPrice = parseUserStockResponse.await()
-        Log.e("SUCCESS_FETCH_USR_STCKS",mapOfUserStockSymbolAndPrice.keys.toString())
+       // Log.e("SUCCESS_FETCH_USR_STCKS",mapOfUserStockSymbolAndPrice.keys.toString())
         //liveDataMap.postValue( mapOfUserStockSymbolAndPrice)
         return mapOfUserStockSymbolAndPrice
     }
@@ -191,7 +191,7 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         }
         try {
             var tempAwait = retrievingAmericanCompaniesJob.await()
-            Log.e("AMERICAN_COMPANY_AWAIT","american companies response => $tempAwait")
+            //Log.e("AMERICAN_COMPANY_AWAIT","american companies response => $tempAwait")
         } catch(exception : Exception) {
             Log.e("EXCEPTION_AWAIT_US","ExceptionTag: ${exception.toString()}")
         }
@@ -201,12 +201,12 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         }
         try{
             parsedJsonJob.await()
-            Log.e("US_COMP_PARSED_SUCCESS","Successfully parsed all americna companies.")
+            //Log.e("US_COMP_PARSED_SUCCESS","Successfully parsed all americna companies.")
         } catch (exception: Exception) {
             Log.e("EXCEPTION_PARSE_US","ExceptionTag: ${exception.toString()}")
         }
         americanCompaniesMap = parsedJsonJob.await()
-        Log.e("SUCCESS_STOCK_US_COMP",americanCompaniesMap.keys.toString())
+        //Log.e("SUCCESS_STOCK_US_COMP",americanCompaniesMap.keys.toString())
         //liveDataAmericanCompaniesMap.postValue(americanCompaniesMap)
         return americanCompaniesMap
     }
@@ -231,7 +231,7 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
             listOfRealTimeQuotes.values.map {
                 it.get("quote")?.let { it1 -> linkedHashMap.put(it1.symbol.toString(), it1.latestPrice.toString()) }
             }
-        Log.e("SUCCESS_PARSE_USR_STCKS","Stock successfully parsed => /n ${linkedHashMap.get("TSLA")}")
+        //Log.e("SUCCESS_PARSE_USR_STCKS","Stock successfully parsed => /n ${linkedHashMap.get("TSLA")}")
         return linkedHashMap
     }
 

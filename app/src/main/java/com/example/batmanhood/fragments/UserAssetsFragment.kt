@@ -7,15 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.batmanhood.R
+import com.example.batmanhood.adapters.AssetRecyclerViewAdapter
+import com.example.batmanhood.viewModels.UserProfileViewModel
 import kotlinx.android.synthetic.main.fragment_user_assets.*
-
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -25,28 +23,41 @@ private const val ARG_PARAM2 = "param2"
 class UserAssetsFragment : Fragment() {
     // TODO: Rename and change types of parameters
 
-    var recyclerView : RecyclerView = asset_recycler_view
     /*recyclerView.adapter = assetRecyclerViewAdapter
     recyclerView.layoutManager = LinearLayoutManager(this)*/
     //Autocomplete variables
-    val autocompleteTextView : AutoCompleteTextView = autocomplete_search_bar
-    val autocompleteAssetList : MutableList<String> = mutableListOf("Amazon","Apple","Apples for me",
+
+    private val autocompleteAssetList : MutableList<String> = mutableListOf("Amazon","Apple","Apples for me",
         "Apricot","Micron","Aircraft","Apple Pie",
         "Nio","Microsoft","Airbnb","Tesla","Sony","Bose","Delta Airlines","Google","Netflix")
-    val autocompleteAdapter : ArrayAdapter<String> =
-        ArrayAdapter<String>(requireContext(),android.R.layout.simple_list_item_1,autocompleteAssetList)
+    private val viewModel : UserProfileViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val root = inflater.inflate(R.layout.fragment_user_assets, container, false)
+        val autocompleteTextView : AutoCompleteTextView = root.findViewById(R.id.autocomplete_search_bar)
+        val autocompleteAdapter : ArrayAdapter<String> =
+            ArrayAdapter<String>(requireContext(),android.R.layout.simple_list_item_1,autocompleteAssetList)
         autocompleteTextView.setAdapter(autocompleteAdapter)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_assets, container, false)
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val renderingAssetAdapter =
+            viewModel.currentUserStockList.value?.let { it1 -> AssetRecyclerViewAdapter(it1) }
+        asset_recycler_view.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = renderingAssetAdapter
+        }
     }
 
     companion object {
@@ -54,8 +65,6 @@ class UserAssetsFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment userAssetFragment.
          */
         // TODO: Rename and change types and number of parameters

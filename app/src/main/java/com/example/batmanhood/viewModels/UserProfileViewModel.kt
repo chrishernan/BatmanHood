@@ -33,7 +33,7 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
             val americanCompaniesJob = asyncGetAllAmericanCompanies(stockAndIndexApiHelper)
             val tempUser = userJob.await()
             altUser.postValue(tempUser)
-            Log.e("USER_TAG","User -> ${altUser.value}")
+            Log.e("USER_TAG","User -> ${tempUser}")
             val userAssetsJob = asyncGetUserAssets(stockAndIndexApiHelper, userJob)
             americanCompaniesList.postValue(americanCompaniesJob.await())
             currentUserStockList.postValue(userAssetsJob.await())
@@ -64,7 +64,7 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
     fun asyncGetUserAssets(stockAndIndexApiHelper: StockAndIndexApiHelper, deferredUser: Deferred<User?>)
         = viewModelCoroutineScope.async {
         altUser.postValue(deferredUser.await())
-        Log.e("USER_TAG_GET_ASSETS","${altUser.value}")
+        //Log.e("USER_TAG_GET_ASSETS","${altUser.value}")
         FirestoreClass(stockAndIndexApiHelper).fetchUserStocks(altUser)
     }
 }
