@@ -168,7 +168,7 @@ class RealTimeStockQuote : Parcelable {
 
     @SerializedName("iexBidPrice")
     @Expose
-    var iexBidPrice: Long? = null
+    var iexBidPrice: Double? = null
 
     @SerializedName("iexBidSize")
     @Expose
@@ -176,7 +176,7 @@ class RealTimeStockQuote : Parcelable {
 
     @SerializedName("iexAskPrice")
     @Expose
-    var iexAskPrice: Long? = null
+    var iexAskPrice: Double? = null
 
     @SerializedName("iexAskSize")
     @Expose
@@ -267,9 +267,9 @@ class RealTimeStockQuote : Parcelable {
         iexMarketPercent = `in`.readValue(Double::class.java.classLoader) as Double?
         iexVolume = `in`.readValue(Long::class.java.classLoader) as Long?
         avgTotalVolume = `in`.readValue(Long::class.java.classLoader) as Long?
-        iexBidPrice = `in`.readValue(Long::class.java.classLoader) as Long?
+        iexBidPrice = `in`.readValue(Double::class.java.classLoader) as Double?
         iexBidSize = `in`.readValue(Long::class.java.classLoader) as Long?
-        iexAskPrice = `in`.readValue(Long::class.java.classLoader) as Long?
+        iexAskPrice = `in`.readValue(Double::class.java.classLoader) as Double?
         iexAskSize = `in`.readValue(Long::class.java.classLoader) as Long?
         iexOpen = `in`.readValue(Double::class.java.classLoader) as Double?
         iexOpenTime = `in`.readValue(Long::class.java.classLoader) as Long?

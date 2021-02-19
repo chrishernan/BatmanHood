@@ -1,6 +1,7 @@
 package com.example.batmanhood.IO
 
 import com.example.batmanhood.models.AutofillCompany
+import com.example.batmanhood.models.HistoricalPrices
 import com.example.batmanhood.models.RealTimeStockQuote
 import com.example.batmanhood.utils.Constants
 import kotlinx.coroutines.Deferred
@@ -37,6 +38,7 @@ interface iexApiService {
 
     @GET ("stable/stock/market/batch")
     suspend fun getMultipleStockQuotes(
+
             @Query("symbols") symbols : String,
             @Query("types") types: String,
             @Query("token") apiToken: String) : HashMap<String,HashMap<String,RealTimeStockQuote>>
@@ -55,13 +57,13 @@ interface iexApiService {
      *     1 hour range, 1 day, 1 week, 1 month, 3 months, 6 months, 1 year, 2 years, 3 years, 5 years,
      *     10 years, MAX
      */
-    @GET("stable/stock/{symbol}/chart/{range}/{date}")
+    @GET("stable/stock/{symbol}/chart/")
     suspend fun getHistoricalStockPrices(
             @Path("symbol") stockSymbol: String,
-            @Path("range") priceRangeOfPrices: String,
-            @Path("date") todaysDate: String,
-            @Query("token") apiToken: String
-    )
+            @Query("filter") filterOfFields : String,
+            @Query("range") rangeOfDays: String,
+            @Query("chartSimplify") chartSimplify : String,
+            @Query("token") apiToken: String) : List<HistoricalPrices>
 
     /**
      *  This is the method that will be used to get that day's data points
@@ -96,7 +98,7 @@ interface iexApiService {
     @GET("beta/ref-data/symbols")
     suspend fun getAllUSCompanies(
         @Query("token") apiToken: String
-    ) : List<AutofillCompany>
+    ) : MutableList<AutofillCompany>
 
     //static implementation of create() method
     companion object{

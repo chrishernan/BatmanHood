@@ -1,5 +1,6 @@
 package com.example.batmanhood.IO
 
+import com.example.batmanhood.models.HistoricalPrices
 import com.example.batmanhood.models.RealTimeStockQuote
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -31,10 +32,11 @@ class StockAndIndexApiHelper @Inject constructor(private val iexApiService: iexA
 
      suspend fun getHistoricalStockPrices(
              stockSymbol: String,
-             priceRangeOfPrices: String,
-             todaysDate: String,
-             apiToken: String) = iexApiService
-                .getHistoricalStockPrices(stockSymbol,priceRangeOfPrices,todaysDate,apiToken)
+             fieldFilter : String,
+             rangeOfDays: String,
+             chartSimplify : String,
+             apiToken: String) : List<HistoricalPrices>
+        = iexApiService.getHistoricalStockPrices(stockSymbol,fieldFilter,rangeOfDays,chartSimplify,apiToken)
 
      suspend fun getIntradayStockPrices(
              stockSymbol: String,

@@ -7,11 +7,6 @@
     tools:context=".activities.MainActivity"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="RIGHT BEFORE FRAGMENT"/>
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/main_activity_fragment_container_view"
         android:layout_width="match_parent"

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.batmanhood.IO.StockAndIndexApiHelper
 import com.example.batmanhood.activities.*
 import com.example.batmanhood.models.AutofillCompany
+import com.example.batmanhood.models.HistoricalPrices
 import com.example.batmanhood.models.RealTimeStockQuote
 import com.example.batmanhood.models.User
 import com.example.batmanhood.utils.Constants
@@ -18,7 +19,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.squareup.okhttp.Dispatcher
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import java.lang.Exception
 import kotlin.system.exitProcess
 
@@ -144,11 +148,11 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
     /**
      * This takes in a [user] and returns all the users stocks in a LinkedHashMap for rendering
      */
-    suspend fun fetchUserStocks(user: MutableLiveData<User?>) : LinkedHashMap<String,String>{
+    suspend fun fetchUserStocks(user: MutableLiveData<User?>) : LinkedHashMap<String,RealTimeStockQuote>{
         //val listOfLiveData: MutableList<MutableLiveData<RealTimeStockQuote>> = mutableListOf()
         //val stockLiveData: MutableLiveData<RealTimeStockQuote> = MutableLiveData()
         var listOfRealTimeQuotes: HashMap<String, HashMap<String, RealTimeStockQuote>>
-        var mapOfUserStockSymbolAndPrice: LinkedHashMap<String, String>
+        var mapOfUserStockSymbolAndPrice: LinkedHashMap<String, RealTimeStockQuote>
         //var liveDataMap = MutableLiveData<LinkedHashMap<String, String>>()
         var userStockJob = networkingScope.async {
             stockAndIndexFetcher.getMultipleStockQuotes(
@@ -166,25 +170,34 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         return mapOfUserStockSymbolAndPrice
     }
 
-    /*
-     * This
-     */
-    fun fetchCrypto(currentUser: User) {
 
+    fun fetchHistoricalDataOfAllUserStocks(listOfUserStocks: List<String>,rangeOfDays : String)
+    : Flow<HashMap<String,List<HistoricalPrices>>>  = flow {
+        for (userStock in listOfUserStocks) {
+            var userStockHistoricalData = fetchHistoricalDataOfOneStock(userStock,rangeOfDays)
+            emit(userStockHistoricalData)
+        }
     }
 
-    /**
-     *
-     */
-    fun fetchIndexes(currentUser: User) {
-
+    private suspend fun fetchHistoricalDataOfOneStock(symbol : String, rangeOfDays : String) : HashMap<String,List<HistoricalPrices>>{
+        var historicalDataRequest = networkingScope.async {
+            stockAndIndexFetcher.getHistoricalStockPrices(
+                symbol,
+                Constants.HISTORICALDATAAPIFILTER,
+                rangeOfDays,
+                Constants.CHARTSIMPLIFY,
+                Constants.IEX_TOKEN)
+        }
+        var response = historicalDataRequest.await()
+        var mapOfSymbolToHistoricalPrices = HashMap<String,List<HistoricalPrices>>()
+        mapOfSymbolToHistoricalPrices.put(symbol,response)
+        return mapOfSymbolToHistoricalPrices
     }
 
     /**
      * This is used for our autocomplete functionality
      */
-    suspend fun retrieveAllUSCompanies() : HashMap<String,String>{
-        var americanCompaniesMap : HashMap<String,String> = hashMapOf()
+    suspend fun retrieveAllUSCompanies() : MutableList<AutofillCompany>{
         //var liveDataAmericanCompaniesMap = MutableLiveData<HashMap<String,String>>()
         val retrievingAmericanCompaniesJob = networkingScope.async {
             stockAndIndexFetcher.getAllUSCompanies(Constants.IEX_TOKEN)
@@ -196,21 +209,12 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
             Log.e("EXCEPTION_AWAIT_US","ExceptionTag: ${exception.toString()}")
         }
         var americanCompanies = retrievingAmericanCompaniesJob.await()
-        val parsedJsonJob = cpuScope.async {
-            parseAutofillJSON(americanCompanies)
-        }
-        try{
-            parsedJsonJob.await()
-            //Log.e("US_COMP_PARSED_SUCCESS","Successfully parsed all americna companies.")
-        } catch (exception: Exception) {
-            Log.e("EXCEPTION_PARSE_US","ExceptionTag: ${exception.toString()}")
-        }
-        americanCompaniesMap = parsedJsonJob.await()
-        //Log.e("SUCCESS_STOCK_US_COMP",americanCompaniesMap.keys.toString())
-        //liveDataAmericanCompaniesMap.postValue(americanCompaniesMap)
-        return americanCompaniesMap
+        return americanCompanies
     }
 
+    /**
+     * Deprecated
+     */
     private suspend fun parseAutofillJSON(listOfCompanies : List<AutofillCompany>)
             : HashMap<String,String> {
         var companySymbolAndNameMap : HashMap<String,String> = hashMapOf()
@@ -225,21 +229,14 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
      * @returns Stock symbol and current stock price
      * todo figure out a way to make the database sort your assets alphabetically
      */
-    private suspend fun  parseUserStocks(listOfRealTimeQuotes : HashMap<String,HashMap<String,RealTimeStockQuote>> )
-    : LinkedHashMap<String, String> {
-        var linkedHashMap = LinkedHashMap<String, String>()
+    private suspend fun parseUserStocks(listOfRealTimeQuotes : HashMap<String,HashMap<String,RealTimeStockQuote>> )
+    : LinkedHashMap<String, RealTimeStockQuote> {
+        var linkedHashMap = LinkedHashMap<String, RealTimeStockQuote>()
             listOfRealTimeQuotes.values.map {
-                it.get("quote")?.let { it1 -> linkedHashMap.put(it1.symbol.toString(), it1.latestPrice.toString()) }
+                it.get("quote")?.let { it1 -> linkedHashMap.put(it1.symbol.toString(), it1) }
             }
         //Log.e("SUCCESS_PARSE_USR_STCKS","Stock successfully parsed => /n ${linkedHashMap.get("TSLA")}")
         return linkedHashMap
-    }
-
-    /**
-     * This function will fetch user data for main activity to use to render
-     */
-    fun fetchUserDataFromFirebase(currentUser: User){
-        //mFireStore.collection(Constants.)
     }
 
     /**

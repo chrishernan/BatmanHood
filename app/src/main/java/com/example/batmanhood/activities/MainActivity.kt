@@ -12,6 +12,7 @@ import com.example.batmanhood.R
 import com.example.batmanhood.fragments.ErrorFragment
 import com.example.batmanhood.fragments.LoadingScreenFragment
 import com.example.batmanhood.fragments.UserAssetsFragment
+import com.example.batmanhood.fragments.singleAssetFragment
 import com.example.batmanhood.models.RealTimeStockQuote
 import com.example.batmanhood.models.User
 import com.example.batmanhood.utils.UserProfileViewModelFactory
@@ -63,17 +64,16 @@ class MainActivity : BaseActivity() {
             //todo POSSIBLE SHOW USERNAME AT THE TOP, OR MAYBE DO NOTHING
         })
         viewModel.americanCompaniesList.observe(this, Observer {
-            //TODO -> when this gets updated or w/e we can let our app know we can autofill now.
-           //populate autucomplete textview
-            populateAutofillOptions(viewModel.americanCompaniesList)
-           // var a : ArrayAdapter<String> = ArrayAdapter<String>(this,1)
         })
         viewModel.currentUserStockList.observe(this, Observer {
-            //render main ui fragment
+        })
 
+        viewModel.listOfUserStockHistoricalPrices.observe(this, Observer {
+            //render main ui fragment
             supportFragmentManager.commit {
                 replace<UserAssetsFragment>(R.id.main_activity_fragment_container_view)
                 setReorderingAllowed(true)
+                addToBackStack("UserAssetFragment")
             }
         })
     }
@@ -82,33 +82,18 @@ class MainActivity : BaseActivity() {
         doubleBackToExit()
     }
 
-
-    private fun configureUserPreferences() {
-        //TODO get user preferences from database
-
-    }
-
-    fun configureUserAssetList(user_stocks : MutableList<MutableLiveData<RealTimeStockQuote>>, user : User){
-        for (s in user_stocks) {
-            Log.d("STOCK_MAIN_ACTIVITY", s.value?.companyName.toString())
+    fun singleAssetFragment(assetSymbol : String) {
+        supportFragmentManager.commit {
+            replace<singleAssetFragment
+                    >(R.id.main_activity_fragment_container_view)
+            setReorderingAllowed(true)
+            addToBackStack("SingleUserFragment")
         }
     }
 
-    fun fetchStockPrice(){
 
-    }
-
-
-
-    fun fetchStockHistoryForTheDay(){
-
-    }
-
-    fun populateAssetList(companyMap : HashMap<String,String>){
-
-    }
-
-    fun populateAutofillOptions(americanCompaniesList: MutableLiveData<HashMap<String, String>>) {
+    private fun configureUserPreferences() {
+        //TODO get user preferences from database
 
     }
 

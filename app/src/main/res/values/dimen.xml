@@ -37,4 +37,6 @@
     <dimen name="progress_text_marginStart">16dp</dimen>
     <dimen name="progress_text_size">16sp</dimen>
 
+    <dimen name="card_view_margin">8dp</dimen>
+
 </resources>

@@ -85,6 +85,12 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:2.28-alpha"
     kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha01'
 
+    //Timber Logging Library
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    //Spark Chart Graphing library
+    implementation 'com.robinhood.spark:spark:1.2.0'
+
+
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
