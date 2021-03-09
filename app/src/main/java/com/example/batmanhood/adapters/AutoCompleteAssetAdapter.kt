@@ -15,7 +15,7 @@ class AutoCompleteAssetAdapter(
         resource : Int,
         listOfAssets : MutableList<AutofillCompany>) : ArrayAdapter<AutofillCompany>(context, resource, listOfAssets) {
 
-    private lateinit var fullListOfAutofillCompany : MutableList<AutofillCompany>
+    private var fullListOfAutofillCompany : MutableList<AutofillCompany>
 
     init {
         fullListOfAutofillCompany = listOfAssets.toMutableList()
@@ -27,7 +27,7 @@ class AutoCompleteAssetAdapter(
             mutableConvertView =  LayoutInflater.from(context).inflate(R.layout.autocomplete_row,parent,false)
         }
         var assetNameTextView : TextView = mutableConvertView?.findViewById(R.id.auto_complete_asset_name) as TextView
-        var assetSymbolTextView : TextView = mutableConvertView?.findViewById(R.id.auto_complete_asset_symbol) as TextView
+        var assetSymbolTextView : TextView = mutableConvertView.findViewById(R.id.auto_complete_asset_symbol) as TextView
 
         var assetItem : AutofillCompany? = getItem(position)
 

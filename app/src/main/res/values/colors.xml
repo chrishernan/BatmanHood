@@ -15,5 +15,6 @@
     <color name="snackbar_error_color">#F72400</color>
 
     <color name="color_for_stock_below_open">#FF5733</color>
+    <color name="color_for_stock_above_open">#00fe00</color>
 
 </resources>

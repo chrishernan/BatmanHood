@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.BatmanHood.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/batman_yellow</item>
-        <item name="colorPrimaryVariant">@color/mustard_yellow</item>
+        <item name="colorPrimary">@color/color_for_stock_above_open</item>
+        <item name="colorPrimaryVariant">@color/color_for_stock_below_open</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/night_gray</item>

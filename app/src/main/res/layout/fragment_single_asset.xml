@@ -1,17 +1,450 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
     tools:context=".fragments.singleAssetFragment">
 
+    <include
+        android:id="@+id/single_asset_toolbar_include"
+        layout="@layout/single_asset_toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/text_view_stock_symbol"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/single_user_left_vertical_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".1"/>
+
+
     <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textColor="@color/batman_yellow"
+        android:id="@+id/text_view_stock_symbol"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/hello_blank_fragment"
+        android:textColor="@color/white"
         android:textSize="24sp"
-        android:text="@string/hello_blank_fragment" />
+        app:layout_constraintBottom_toTopOf="@id/text_view_stock_price"
+        app:layout_constraintEnd_toEndOf="@id/single_user_right_vertical_guideline"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@id/single_asset_toolbar_include" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/text_view_stock_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:text="PRICE"
+        android:textColor="@color/white"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/text_view_stock_change"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@id/text_view_stock_symbol"
+        />
+
+    <TextView
+        android:id="@+id/text_view_stock_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:text="Price Change 123"
+        android:textColor="@color/white"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/single_user_asset_sparkview"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@id/text_view_stock_price"
+        />
+
+    <com.robinhood.spark.SparkView
+        android:id="@+id/single_user_asset_sparkview"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toTopOf="@id/middle_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_stock_change" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/middle_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".5"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/middle_guideline" >
+
+        <RadioButton
+            android:id="@+id/one_day_radio_button"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:button="@null"
+            android:background="@drawable/range_button_unselected_rounded"
+            android:text="@string/one_day_radio_button_text"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:onClick="onSingleAssetFragmentClick" />
+        <RadioButton
+            android:id="@+id/five_day_radio_button"
+            android:button="@null"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:background="@drawable/range_button_unselected_rounded"
+            android:text="@string/five_day_radio_button_text"
+            android:layout_width="@dimen/radio_button_single_user_fragment_size"
+            android:layout_height="match_parent"
+            android:onClick="onSingleAssetFragmentClick"
+            />
+        <RadioButton
+            android:id="@+id/one_month_radio_button"
+            android:button="@null"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:background="@drawable/range_button_unselected_rounded"
+            android:text="@string/one_month_radio_button_text"
+            android:layout_width="@dimen/radio_button_single_user_fragment_size"
+            android:layout_height="match_parent"
+            android:onClick="onSingleAssetFragmentClick"
+            />
+        <RadioButton
+            android:id="@+id/six_month_radio_button"
+            android:button="@null"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:background="@drawable/range_button_unselected_rounded"
+            android:text="@string/six_month_radio_button_text"
+            android:layout_width="@dimen/radio_button_single_user_fragment_size"
+            android:layout_height="match_parent"
+            android:onClick="onSingleAssetFragmentClick"
+            />
+        <RadioButton
+            android:id="@+id/one_year_radio_button"
+            android:button="@null"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:background="@drawable/range_button_unselected_rounded"
+            android:text="@string/one_year_radio_button_text"
+            android:layout_width="@dimen/radio_button_single_user_fragment_size"
+            android:layout_height="match_parent"
+            android:onClick="onSingleAssetFragmentClick"
+            />
+        <RadioButton
+            android:id="@+id/five_year_radio_button"
+            android:button="@null"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:background="@drawable/range_button_unselected_rounded"
+            android:text="@string/five_year_radio_button_text"
+            android:layout_width="@dimen/radio_button_single_user_fragment_size"
+            android:layout_height="match_parent"
+            android:onClick="onSingleAssetFragmentClick"
+            />
+    </RadioGroup>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_middle_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".5"/>
+
+    <TextView
+        android:id="@+id/statistics_text_view"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:text="Statistics"
+        android:textColor="@color/white"
+        android:textSize="@dimen/large_text_size"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_open_title"
+        app:layout_constraintEnd_toEndOf="@id/single_user_right_vertical_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+
+    <TextView
+        android:id="@+id/single_user_fragment_open_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_open_price"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/statistics_text_view" />
+
+    <TextView
+        android:id="@+id/single_user_fragment_open_price"
+        android:text="111"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_today_high_title"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_open_title"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_volume_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Volume"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_volume"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/statistics_text_view" />
+
+    <TextView
+        android:id="@+id/single_user_fragment_volume"
+        android:text="222"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_average_volume_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_volume_title"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_average_volume_title"
+        android:text="Average Volume"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_average_volume"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_volume"/>
+    <TextView
+        android:id="@+id/single_user_fragment_average_volume"
+        android:text="22"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_market_cap_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_average_volume_title"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_today_high_title"
+        android:text="Today's High"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_open_price"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_today_high"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_today_high"
+        android:text="90"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_today_high_title"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_today_low_title"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_today_low_title"
+        android:text="Today's low"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_today_high"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_today_low"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_today_low"
+        android:text="1010"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_today_low_title"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_52_week_high_title"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_market_cap_title"
+        android:text="Market Cap"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_average_volume"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_market_cap"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_market_cap"
+        android:text="8989"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_market_cap_title"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_pe_ratio_title"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_pe_ratio_title"
+        android:text="P/E"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_market_cap"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_pe_ratio"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_pe_ratio"
+        android:text="15.0"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_pe_ratio_title"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_previous_close_title"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_52_week_high_title"
+        android:text="52 Week High"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_today_low"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_52_week_high"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_52_week_high"
+        android:text="$1212"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_52_week_high_title"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_52_week_low_title"/>
+
+
+    <TextView
+        android:id="@+id/single_user_fragment_52_week_low_title"
+        android:text="52 Week Low"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_52_week_high"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_52_week_low"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_52_week_low"
+        android:text="$8989"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/vertical_middle_guideline"
+        app:layout_constraintStart_toStartOf="@id/single_user_left_vertical_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_52_week_low_title"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_previous_close_title"
+        android:text="Previous Close"
+        android:textColor="@color/dusk_gray"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_pe_ratio"
+        app:layout_constraintBottom_toTopOf="@id/single_user_fragment_previous_close"/>
+
+    <TextView
+        android:id="@+id/single_user_fragment_previous_close"
+        android:text="$999"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_text_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/vertical_middle_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_user_fragment_previous_close_title"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/single_user_right_vertical_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".9"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

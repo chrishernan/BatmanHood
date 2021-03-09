@@ -1,63 +1,65 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/black"
-    tools:context=".fragments.UserAssetsFragment">
+    android:layout_height="?attr/actionBarSize">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/user_fragment_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/toolbar_title"
+            <ImageButton
+                android:id="@+id/single_asset_fragment_back_button"
+                android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textColor="@color/white"
-                android:textSize="@dimen/large_text_size"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_white_color_back_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/toolbar_guide_line"
+                app:layout_constraintEnd_toStartOf="@id/single_asset_toolbar_vertical_guide_line"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/single_asset_fragment_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GME"
+                android:textColor="@color/white"
+                android:textSize="@dimen/large_text_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/single_asset_toolbar_vertical_guide_line"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/toolbar_guide_line"
+                android:id="@+id/single_asset_toolbar_vertical_guide_line"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent=".5"/>
 
             <ImageButton
-                android:id="@+id/toolbar_search_button"
+                android:id="@+id/single_asset_fragment_add_button"
                 android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_search_button_ripple_bordered"
+                android:src="@drawable/ic_checked_off_button_ripple_bordered"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.9"
-                app:layout_constraintStart_toStartOf="@+id/toolbar_guide_line"
+                app:layout_constraintStart_toEndOf="@+id/single_asset_toolbar_vertical_guide_line"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/asset_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="86dp"
-        tools:layout_editor_absoluteY="57dp" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

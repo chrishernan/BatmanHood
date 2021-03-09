@@ -18,4 +18,12 @@ class TestSparkAdapter(listOfHistoricalPrices : List<Float>) : SparkAdapter() {
         return priceData[index]
     }
 
+    override fun hasBaseLine(): Boolean {
+        return true
+    }
+    override fun getBaseLine(): Float {
+        return priceData.average().toFloat()
+
+    }
+
 }

@@ -11,10 +11,12 @@ import com.example.batmanhood.models.HistoricalPrices
 import com.example.batmanhood.models.RealTimeStockQuote
 import com.example.batmanhood.models.User
 import com.example.batmanhood.utils.Constants
+import com.example.batmanhood.utils.KeyType
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.squareup.okhttp.Dispatcher
@@ -72,8 +74,18 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         return loggedInUser?.toObject(User::class.java)
     }
 
-    fun FirebaseAuth.newFirebaseAuthStateLiveData() {
+    fun removeStockFromFirebaseUserStockList(symbol: String) {
+        val userRef = mFireStore.collection(Constants.USERS).document(getCurrentUserID())
+        Timber.e("Stock to remove => $symbol")
+        userRef
+            .update("stock_list",FieldValue.arrayRemove(symbol.toUpperCase()))
+        Timber.e("Stock removed => $symbol")
+    }
 
+    fun addStockFromFirebaseUserStockList(symbol: String) {
+        val userRef = mFireStore.collection(Constants.USERS).document(getCurrentUserID())
+        userRef
+            .update("stock_list",FieldValue.arrayUnion(symbol.toUpperCase()))
     }
 
     private fun getFirebaseDocumentSnapshot(userId : String) : Task<DocumentSnapshot> = runBlocking {
@@ -148,15 +160,15 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
     /**
      * This takes in a [user] and returns all the users stocks in a LinkedHashMap for rendering
      */
-    suspend fun fetchUserStocks(user: MutableLiveData<User?>) : LinkedHashMap<String,RealTimeStockQuote>{
+    suspend fun fetchUserStocks(user : User) : LinkedHashMap<String,RealTimeStockQuote>{
         //val listOfLiveData: MutableList<MutableLiveData<RealTimeStockQuote>> = mutableListOf()
         //val stockLiveData: MutableLiveData<RealTimeStockQuote> = MutableLiveData()
-        var listOfRealTimeQuotes: HashMap<String, HashMap<String, RealTimeStockQuote>>
+        Timber.e("FireStore Stock List => ${user.stock_list}")
         var mapOfUserStockSymbolAndPrice: LinkedHashMap<String, RealTimeStockQuote>
         //var liveDataMap = MutableLiveData<LinkedHashMap<String, String>>()
         var userStockJob = networkingScope.async {
             stockAndIndexFetcher.getMultipleStockQuotes(
-                    user.value!!.stock_list!!.joinToString(separator = ","),
+                    user.stock_list.joinToString(separator = ","),
                     "quote",
                     Constants.IEX_TOKEN)
         }
@@ -167,30 +179,59 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         mapOfUserStockSymbolAndPrice = parseUserStockResponse.await()
        // Log.e("SUCCESS_FETCH_USR_STCKS",mapOfUserStockSymbolAndPrice.keys.toString())
         //liveDataMap.postValue( mapOfUserStockSymbolAndPrice)
+        Timber.e("Done fetching Stock List Quotes")
         return mapOfUserStockSymbolAndPrice
     }
 
+    suspend fun fetchOneStockRealTimeData(symbol: String) :  LinkedHashMap<String,RealTimeStockQuote>{
+        var mapOfStockSymbolAndPrice: LinkedHashMap<String, RealTimeStockQuote> = linkedMapOf()
+        var userStockJob = networkingScope.async {
+            stockAndIndexFetcher.getRealTimeStockQuoteAllFields(
+                symbol,
+                Constants.IEX_TOKEN)
+        }
+        var userStockResponse = userStockJob.await()
+        mapOfStockSymbolAndPrice.put(symbol,userStockResponse)
+        return mapOfStockSymbolAndPrice
+    }
 
-    fun fetchHistoricalDataOfAllUserStocks(listOfUserStocks: List<String>,rangeOfDays : String)
-    : Flow<HashMap<String,List<HistoricalPrices>>>  = flow {
+    fun fetchHistoricalDataOfAllUserStocks(listOfUserStocks: MutableList<String>,rangeOfDays : String)
+    : Flow<HashMap<String,MutableList<HistoricalPrices>>>  = flow {
         for (userStock in listOfUserStocks) {
-            var userStockHistoricalData = fetchHistoricalDataOfOneStock(userStock,rangeOfDays)
+            val userStockHistoricalData = fetchHistoricalDataOfOneStock(userStock,rangeOfDays,KeyType.SYMBOL_KEY)
             emit(userStockHistoricalData)
         }
     }
 
-    private suspend fun fetchHistoricalDataOfOneStock(symbol : String, rangeOfDays : String) : HashMap<String,List<HistoricalPrices>>{
-        var historicalDataRequest = networkingScope.async {
+    fun fetchAllRangesOfHistoricalDataForOneStock(symbol : String, listOfRanges : MutableList<String>)
+    : Flow<HashMap<String,MutableList<HistoricalPrices>>> = flow {
+        for(range in listOfRanges) {
+            val stockHistoricalData = fetchHistoricalDataOfOneStock(symbol,range,KeyType.RANGE_KEY)
+            emit(stockHistoricalData)
+        }
+    }
+
+    suspend fun fetchHistoricalDataOfOneStock(symbol : String, rangeOfDays : String, keyType: KeyType)
+    : HashMap<String,MutableList<HistoricalPrices>>{
+        val historicalDataRequest = networkingScope.async {
             stockAndIndexFetcher.getHistoricalStockPrices(
                 symbol,
-                Constants.HISTORICALDATAAPIFILTER,
+                Constants.HISTORICAL_DATA_API_FILTER,
                 rangeOfDays,
-                Constants.CHARTSIMPLIFY,
+                Constants.CHART_SIMPLIFY,
                 Constants.IEX_TOKEN)
         }
-        var response = historicalDataRequest.await()
-        var mapOfSymbolToHistoricalPrices = HashMap<String,List<HistoricalPrices>>()
-        mapOfSymbolToHistoricalPrices.put(symbol,response)
+        val response = historicalDataRequest.await()
+        val mapOfSymbolToHistoricalPrices = HashMap<String,MutableList<HistoricalPrices>>()
+        when(keyType) {
+            KeyType.SYMBOL_KEY -> {
+                mapOfSymbolToHistoricalPrices.put(symbol,response)
+            }
+            KeyType.RANGE_KEY -> {
+                mapOfSymbolToHistoricalPrices.put(rangeOfDays,response)
+
+            }
+        }
         return mapOfSymbolToHistoricalPrices
     }
 
@@ -200,7 +241,9 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
     suspend fun retrieveAllUSCompanies() : MutableList<AutofillCompany>{
         //var liveDataAmericanCompaniesMap = MutableLiveData<HashMap<String,String>>()
         val retrievingAmericanCompaniesJob = networkingScope.async {
-            stockAndIndexFetcher.getAllUSCompanies(Constants.IEX_TOKEN)
+            stockAndIndexFetcher.getAllUSCompanies(
+                Constants.IEX_TOKEN,
+                Constants.ALL_COMPANIES_API_FILTER)
         }
         try {
             var tempAwait = retrievingAmericanCompaniesJob.await()

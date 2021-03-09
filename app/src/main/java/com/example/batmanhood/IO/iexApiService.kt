@@ -18,6 +18,7 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 interface iexApiService {
     /**
@@ -63,7 +64,7 @@ interface iexApiService {
             @Query("filter") filterOfFields : String,
             @Query("range") rangeOfDays: String,
             @Query("chartSimplify") chartSimplify : String,
-            @Query("token") apiToken: String) : List<HistoricalPrices>
+            @Query("token") apiToken: String) : MutableList<HistoricalPrices>
 
     /**
      *  This is the method that will be used to get that day's data points
@@ -97,16 +98,19 @@ interface iexApiService {
 
     @GET("beta/ref-data/symbols")
     suspend fun getAllUSCompanies(
-        @Query("token") apiToken: String
+        @Query("token") apiToken: String,
+        @Query("filter") filter: String
     ) : MutableList<AutofillCompany>
 
     //static implementation of create() method
     companion object{
         fun create() : iexApiService {
-            val logging  = HttpLoggingInterceptor()
+            val logging = HttpLoggingInterceptor()
             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
             val httpClient: OkHttpClient.Builder = OkHttpClient.Builder()
-            httpClient.addInterceptor(logging);
+            httpClient.addInterceptor(logging)
+            httpClient.connectTimeout(60, TimeUnit.SECONDS)
+            httpClient.readTimeout(60, TimeUnit.SECONDS)
 
             val retrofit= Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())

@@ -35,7 +35,7 @@ class StockAndIndexApiHelper @Inject constructor(private val iexApiService: iexA
              fieldFilter : String,
              rangeOfDays: String,
              chartSimplify : String,
-             apiToken: String) : List<HistoricalPrices>
+             apiToken: String) : MutableList<HistoricalPrices>
         = iexApiService.getHistoricalStockPrices(stockSymbol,fieldFilter,rangeOfDays,chartSimplify,apiToken)
 
      suspend fun getIntradayStockPrices(
@@ -54,6 +54,7 @@ class StockAndIndexApiHelper @Inject constructor(private val iexApiService: iexA
                 .getETFInformation(etfSymbol,apiToken)
 
     suspend fun getAllUSCompanies(
-        apiToken: String) =iexApiService.getAllUSCompanies(apiToken)
+        apiToken: String,
+        filter : String) =iexApiService.getAllUSCompanies(apiToken,filter)
 
 }

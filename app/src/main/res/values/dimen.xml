@@ -33,10 +33,24 @@
     <dimen name="authentication_screen_marginTop">60dp</dimen>
 
     <dimen name="progress_dialog_content_padding">10dp</dimen>
-    <dimen name="progress_bar_size">50dp</dimen>
+    <dimen name="progress_bar_size">100dp</dimen>
     <dimen name="progress_text_marginStart">16dp</dimen>
     <dimen name="progress_text_size">16sp</dimen>
 
     <dimen name="card_view_margin">8dp</dimen>
+
+    <dimen name="small_text_size">16sp</dimen>
+    <dimen name="medium_text_size">16sp</dimen>
+    <dimen name="large_text_size">24sp</dimen>
+    <dimen name="extra_large_text_size">32sp</dimen>
+    <dimen name="small_generic_margin">8dp</dimen>
+    <dimen name="medium_generic_margin">16dp</dimen>
+
+
+    //radio button dimensions
+    <dimen name="radio_button_single_user_fragment_size">68dp</dimen>
+
+    //toolbar height
+    <dimen name="toolbar_height">50dp</dimen>
 
 </resources>
