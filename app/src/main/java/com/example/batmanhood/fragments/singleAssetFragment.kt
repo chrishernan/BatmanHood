@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
@@ -171,6 +172,8 @@ class singleAssetFragment : Fragment() {
             view.single_user_fragment_52_week_low.text = currentStockInfo.week52Low.toString()
             view.single_user_fragment_pe_ratio.text = currentStockInfo.peRatio.toString()
             view.single_user_fragment_previous_close.text = currentStockInfo.previousClose.toString()
+            single_asset_toolbar_include.findViewById<TextView>(R.id.single_asset_fragment_toolbar_title)
+                .text = currentStockInfo.companyName
         }
         super.onViewCreated(view, savedInstanceState)
     }
