@@ -168,7 +168,7 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         //var liveDataMap = MutableLiveData<LinkedHashMap<String, String>>()
         var userStockJob = networkingScope.async {
             stockAndIndexFetcher.getMultipleStockQuotes(
-                    user.stock_list.joinToString(separator = ","),
+                    user.stock_list.joinToString(separator = ",").toLowerCase(),
                     "quote",
                     Constants.IEX_TOKEN)
         }

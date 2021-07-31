@@ -1,5 +1,6 @@
 package com.example.batmanhood.activities
 
+import android.app.Activity
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -59,16 +60,12 @@ open class BaseActivity : AppCompatActivity() {
         Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
     }
 
-    fun showErrorSnackBar(message: String) {
-        val snackBar =
-                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
-        val snackBarView = snackBar.view
-        snackBarView.setBackgroundColor(
-                ContextCompat.getColor(
-                        this@BaseActivity,
-                        R.color.snackbar_error_color
-                )
+    fun showErrorToast(message: String,activity: Activity) {
+        var toast : Toast = Toast.makeText(
+            activity,
+            message,
+            Toast.LENGTH_LONG
         )
-        snackBar.show()
+        toast.show()
     }
 }

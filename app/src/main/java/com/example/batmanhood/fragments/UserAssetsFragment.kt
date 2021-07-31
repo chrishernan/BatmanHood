@@ -79,6 +79,9 @@ class UserAssetsFragment : Fragment(), AssetRecyclerViewAdapter.OnAssetListener 
 
         super.onViewCreated(view, savedInstanceState)
         //todo add a scrubber for spark
+
+        //todo add so that if user pulls down from this fragment it refreshes the requests. Might be more difficult
+        //than normal. Have to somehow get the most current data
     }
 
     companion object {
@@ -96,6 +99,10 @@ class UserAssetsFragment : Fragment(), AssetRecyclerViewAdapter.OnAssetListener 
         Timber.e("In onClick Method for fragment => $position and context => $context")
         (activity as MainActivity).stopObservingCurrentUserStockList()
         viewModel.altUser.value?.data?.stock_list?.get(position)?.let { (activity as MainActivity).singleAssetFragment(it) }
+    }
+
+    override fun onLongAssetClick(view: View?, position: Int) {
+        TODO("Not yet implemented")
     }
 
 }

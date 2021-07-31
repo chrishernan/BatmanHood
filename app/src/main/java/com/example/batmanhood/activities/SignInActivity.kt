@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Patterns
+import android.view.Gravity
 import android.widget.Toast
 import com.example.batmanhood.IO.StockAndIndexApiHelper
 import com.example.batmanhood.R
@@ -68,11 +69,12 @@ class SignInActivity : BaseActivity() {
                         FirestoreClass(stockAndIndexApiHelper).loadUserData(this@SignInActivity)
                     } else {
                         hideProgressDialog()
-                        Toast.makeText(
+                        var toast : Toast = Toast.makeText(
                             this@SignInActivity,
                             task.exception!!.message,
                             Toast.LENGTH_LONG
-                        ).show()
+                        )
+                        toast.show()
                     }
                 }
         }
@@ -81,10 +83,10 @@ class SignInActivity : BaseActivity() {
     //Validates whether the email address is not empty or has the correct format
     private fun validateEmail(email: String) : Boolean{
         return if(TextUtils.isEmpty(email)){
-            showErrorSnackBar("Please enter an email")
+            showErrorToast("Please enter an email",this@SignInActivity)
             false
         } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            showErrorSnackBar("Please enter a correctly formatted email address")
+            showErrorToast("Please enter a correctly formatted email address",this@SignInActivity)
             false
         } else {
             true
@@ -96,12 +98,12 @@ class SignInActivity : BaseActivity() {
         val pattern: String = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=()-])(?=\\S+\$).{8,20}\$"
         val passwordPattern = Pattern.compile(pattern)
         return if(TextUtils.isEmpty(password)){
-            showErrorSnackBar("Please enter a password")
+            showErrorToast("Please enter a password",this@SignInActivity)
             false
         } else if(!passwordPattern.matcher(password).matches()){
-            showErrorSnackBar("Please enter a password with at least 1 digit," +
+            showErrorToast("Please enter a password with at least 1 digit," +
                     "one lowercase letter, one uppercase letter, and one special character" +
-            "Password must also have a length between 8 and 20 characters")
+            "Password must also have a length between 8 and 20 characters",this@SignInActivity)
             false
         } else {
             true

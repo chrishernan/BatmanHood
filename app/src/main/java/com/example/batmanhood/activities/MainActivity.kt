@@ -71,6 +71,7 @@ class MainActivity : BaseActivity() {
                         replace<UserAssetsFragment>(R.id.main_activity_fragment_container_view)
                         setReorderingAllowed(true)
                     }
+                    Timber.e("Successfully fetched historical prices.")
                     stopObservingAllOfUsersHistoricalPrices()
                 }
                 Result.Status.ERROR -> {

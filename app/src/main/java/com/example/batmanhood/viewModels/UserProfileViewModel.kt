@@ -13,6 +13,7 @@ import com.example.batmanhood.utils.Constants
 import com.example.batmanhood.utils.KeyType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import okhttp3.internal.wait
 import timber.log.Timber
 
 class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : ViewModel() {
@@ -78,21 +79,23 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
             Timber.e("User symbol list => $tempListOfUserStocks")
             val hashMapOfHistoricalPrices = linkedMapOf<String,MutableList<HistoricalPrices>>()
             val flowListOfHistoricalPrices = FirestoreClass(stockAndIndexApiHelper)
-                    .fetchHistoricalDataOfAllUserStocks(tempListOfUserStocks,Constants.ONE_DAY)
-                    .buffer()
-                    .onEach {
-                        hashMapOfHistoricalPrices.putAll(it) }
-                    .collect()
-
-            Timber.e("Trimmed user assets fragment lists")
-            val mapTrimmingJob = viewModelCPUScope.async {
-                trimNullPricesOfAllStocks(tempListOfUserStocks,hashMapOfHistoricalPrices)
-            }
-            val trimmedMap = mapTrimmingJob.await()
-            listOfUserStockHistoricalPrices.postValue(Result(
-                Result.Status.SUCCESS,
-                trimmedMap,
-                "Success Retrieving Historical One Day Data for User Assets"))
+                .fetchHistoricalDataOfAllUserStocks(tempListOfUserStocks,Constants.ONE_DAY)
+                .buffer()
+                .onEach {
+                    hashMapOfHistoricalPrices.putAll(it)
+                    Timber.e("On each => ${it.keys}")}
+                .onCompletion {
+                    Timber.e("Trimmed user assets fragment lists")
+                    val mapTrimmingJob = viewModelCPUScope.async {
+                        trimNullPricesOfAllStocks(tempListOfUserStocks,hashMapOfHistoricalPrices)
+                    }
+                    val trimmedMap = mapTrimmingJob.await()
+                    listOfUserStockHistoricalPrices.postValue(Result(
+                        Result.Status.SUCCESS,
+                        trimmedMap,
+                        "Success Retrieving Historical One Day Data for User Assets"))
+                }
+                .collect()
         }
     }
 
@@ -304,12 +307,11 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
 
         var listOfIndexesToRemove = mutableListOf<Int>()
         for(symbol in listOfSymbols) {
-            val loweredSymbol = symbol.toLowerCase()
-            Timber.e("Symbol to Trim => $loweredSymbol")
+            val loweredSymbol = symbol
             val currentListOfPrices = mapOfHistoricalPrices[loweredSymbol]
             if (currentListOfPrices != null) {
                 for(i in 0 until currentListOfPrices.size) {
-                    if(currentListOfPrices[i].close == null) {
+                    if(currentListOfPrices[i].close === null) {
                         listOfIndexesToRemove.add(i)
                     }
                 }

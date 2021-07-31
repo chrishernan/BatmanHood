@@ -91,10 +91,10 @@ class RegisterActivity : BaseActivity() {
     //Validates whether the email address is not empty or has the correct format
     private fun validateEmail(email: String) : Boolean{
         return if(TextUtils.isEmpty(email)){
-            showErrorSnackBar("Please enter an email")
+            showErrorToast("Please enter an email",this@RegisterActivity)
             false
         } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            showErrorSnackBar("Please enter a correctly formatted email address")
+            showErrorToast("Please enter a correctly formatted email address",this@RegisterActivity)
             false
         } else {
             true
@@ -106,10 +106,12 @@ class RegisterActivity : BaseActivity() {
         val pattern: String = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=()-])(?=\\S+\$).{8,20}\$"
         var passwordPattern = Pattern.compile(pattern)
         return if(TextUtils.isEmpty(password)){
-            showErrorSnackBar("Please enter a password")
+            showErrorToast("Please enter a password",this@RegisterActivity)
             false
         } else if(!passwordPattern.matcher(password).matches()){
-            showErrorSnackBar("Please enter a password with at least 1 digit, one lowercase letter, one uppercase letter, and one special character Password must also have a length between 8 and 20 characters")
+            showErrorToast("Please enter a password with at least 1 digit, one lowercase letter, " +
+                    "one uppercase letter, and one special character Password must also have a " +
+                    "length between 8 and 20 characters",this@RegisterActivity)
             false
         } else {
             true
@@ -122,7 +124,7 @@ class RegisterActivity : BaseActivity() {
     private fun validateName(name: String): Boolean {
         return when {
             TextUtils.isEmpty(name) -> {
-                showErrorSnackBar("Please enter name.")
+                showErrorToast("Please enter name.",this@RegisterActivity)
                 false
             }
             else -> {

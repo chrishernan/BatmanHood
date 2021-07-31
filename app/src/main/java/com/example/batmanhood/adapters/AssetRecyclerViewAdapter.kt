@@ -79,6 +79,7 @@ class AssetRecyclerViewAdapter(
        // oneDayHistoricalData.get(position). { it.close?.let { it1 -> filteredList.add(it1) } }
         val rtQuoteAtPosition = realTimeStockData[stockSymbolAtPosition]
         val randomSparkAdapter = TestSparkAdapter(filteredList)
+        Timber.e("Before comparing filteredlist items => ${filteredList.size}")
         val isStockHigherThanAtOpen  = filteredList.last() >= filteredList.first()
 
         holder.sparkyView.onLayout {
