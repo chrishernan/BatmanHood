@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "277243009361",
+    "firebase_url": "https://batmanhood-20faf.firebaseio.com",
+    "project_id": "batmanhood-20faf",
+    "storage_bucket": "batmanhood-20faf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277243009361:android:43a84e5bb321dfda7b5b70",
+        "android_client_info": {
+          "package_name": "com.example.batmanhood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "277243009361-3n32peimqdf0um46nauhpq9r0mrceae5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaDSJSqG2q-YNkm8LFhcqbg1wdtNHMMv4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "277243009361-3n32peimqdf0um46nauhpq9r0mrceae5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
