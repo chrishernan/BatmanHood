@@ -84,7 +84,6 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
                         hashMapOfHistoricalPrices.putAll(it) }
                     .collect()
 
-            //todo run the trimming on the default dispatcher instead of network one. It is slowing down app
             Timber.e("Trimmed user assets fragment lists")
             val mapTrimmingJob = viewModelCPUScope.async {
                 trimNullPricesOfAllStocks(tempListOfUserStocks,hashMapOfHistoricalPrices)
@@ -96,11 +95,9 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
                 "Success Retrieving Historical One Day Data for User Assets"))
         }
     }
-    //todo:decouple altAmerican and (altUser + altCurrentUserSotckList) execute together cuz of dependency
 
     fun refreshAutofillCompanyList(){
         //TODO run firestoreClass task
-
     }
 
     fun getOnedayDataForNewStock(symbol: String) {

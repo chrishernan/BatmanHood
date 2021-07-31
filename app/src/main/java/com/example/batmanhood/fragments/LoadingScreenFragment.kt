@@ -7,10 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import com.example.batmanhood.R
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -37,8 +33,6 @@ class LoadingScreenFragment : Fragment() {
          * this fragment using the provided parameters.
          * @return A new instance of fragment loadingScreenFragment.
          */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic fun newInstance() =
-                LoadingScreenFragment()
+        @JvmStatic fun newInstance() = LoadingScreenFragment()
     }
 }

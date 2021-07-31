@@ -54,9 +54,7 @@ interface iexApiService {
 
     /**
      *     This is what will be used to build the charts. Will be used for ranges that are bigger than one day
-     *     TODO Range has it's own notation, will use an enum or something like it to set values for
-     *     1 hour range, 1 day, 1 week, 1 month, 3 months, 6 months, 1 year, 2 years, 3 years, 5 years,
-     *     10 years, MAX
+     *     1 hour range, 1 day, 1 week, 1 month, 3 months, 6 months, 1 year, 2 years, 3 years, 5 years
      */
     @GET("stable/stock/{symbol}/chart/")
     suspend fun getHistoricalStockPrices(

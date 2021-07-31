@@ -30,7 +30,6 @@
                 android:id="@+id/single_asset_fragment_toolbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="GME"
                 android:textColor="@color/white"
                 android:textSize="@dimen/large_text_size"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -23,7 +23,6 @@
         app:layout_constraintGuide_percent=".1"/>
 
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/text_view_stock_symbol"
         android:layout_width="0dp"

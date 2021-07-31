@@ -88,7 +88,6 @@ class UserAssetsFragment : Fragment(), AssetRecyclerViewAdapter.OnAssetListener 
          *
          * @return A new instance of fragment userAssetFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance() = UserAssetsFragment()
     }
@@ -99,7 +98,4 @@ class UserAssetsFragment : Fragment(), AssetRecyclerViewAdapter.OnAssetListener 
         viewModel.altUser.value?.data?.stock_list?.get(position)?.let { (activity as MainActivity).singleAssetFragment(it) }
     }
 
-    override fun onLongAssetClick(view: View?, position: Int) {
-        TODO("Not yet implemented")
-    }
 }

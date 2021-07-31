@@ -17,18 +17,12 @@ import com.example.batmanhood.models.AutofillCompany
 import com.example.batmanhood.models.Result
 import com.example.batmanhood.viewModels.UserProfileViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-
 /**
  * A simple [Fragment] subclass.
  * Use the [SearchFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
     private val viewModel : UserProfileViewModel by activityViewModels()
     private val supportFragmentManager : FragmentManager? = activity?.supportFragmentManager
 
@@ -40,10 +34,6 @@ class SearchFragment : Fragment() {
                 (activity as MainActivity).slideInUserAssetsFragment()
             }
         })
-
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-        }
     }
 
     override fun onCreateView(
@@ -87,16 +77,9 @@ class SearchFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
          * @return A new instance of fragment SearchFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String) =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                }
-            }
+        fun newInstance() = SearchFragment()
     }
 }
