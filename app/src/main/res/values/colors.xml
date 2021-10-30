@@ -17,4 +17,6 @@
     <color name="color_for_stock_below_open">#FF5733</color>
     <color name="color_for_stock_above_open">#00fe00</color>
 
+    <color name="dark_mode_text_color">#FFFFFFFF</color>
+
 </resources>

@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="@string/sign_in"
-            android:textColor="@color/white"
+            android:textColor="@color/batman_yellow"
             android:textSize="@dimen/toolbar_title_text_size"
             android:textStyle="bold" />
 
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/sign_in_description_text"
-            android:textColor="@color/secondary_text_color"
+            android:textColor="@color/batman_yellow"
             android:textSize="@dimen/authentication_description_text_size" />
 
         <androidx.cardview.widget.CardView
@@ -67,7 +67,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/email"
-                        android:background="@color/night_gray"
+                        android:textColor="@color/batman_yellow"
                         android:inputType="textEmailAddress"
                         android:textSize="@dimen/et_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -84,12 +84,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/password"
-                        android:background="@color/night_gray"
                         android:inputType="textPassword"
+                        android:textColor="@color/batman_yellow"
                         android:textSize="@dimen/et_text_size" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_sign_in"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

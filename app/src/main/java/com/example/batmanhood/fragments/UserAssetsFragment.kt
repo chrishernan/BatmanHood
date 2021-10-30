@@ -1,5 +1,6 @@
 package com.example.batmanhood.fragments
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.*
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,6 +77,21 @@ class UserAssetsFragment : Fragment(), AssetRecyclerViewAdapter.OnAssetListener 
             addItemDecoration(DividerItemDecoration(context,DividerItemDecoration.VERTICAL))
             addItemDecoration(MarginItemDecoration(
                     resources.getDimension(R.dimen.card_view_margin).toInt()))
+
+        }
+
+        //set the colors of the pull to refresh view
+        stockSwipeToRefresh.setProgressBackgroundColorSchemeColor(
+            ContextCompat.getColor(requireActivity(), R.color.gray))
+        //stockSwipeToRefresh.setColorSchemeColors(Color.WHITE)
+
+        stockSwipeToRefresh.setOnRefreshListener {
+            Toast.makeText(
+                requireActivity(),
+                "Refreshed page",
+                Toast.LENGTH_LONG
+                ).show()
+            stockSwipeToRefresh.isRefreshing = false
         }
 
         super.onViewCreated(view, savedInstanceState)
