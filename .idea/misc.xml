@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/ic_ripple_search_button.xml" value="0.37552083333333336" />
+        <entry key="app/src/main/res/drawable/range_button_green_selected_rounded.xml" value="0.37552083333333336" />
         <entry key="app/src/main/res/drawable/shape_button_rounded.xml" value="0.37552083333333336" />
         <entry key="app/src/main/res/layout/activity_introduction.xml" value="0.20153985507246377" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2115036231884058" />
