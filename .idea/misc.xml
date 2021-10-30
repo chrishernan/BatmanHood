@@ -10,13 +10,14 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2115036231884058" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_sign_in.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.24139492753623187" />
         <entry key="app/src/main/res/layout/activity_user_asset_view.xml" value="0.2115036231884058" />
         <entry key="app/src/main/res/layout/autocomplete_custom_layout.xml" value="0.2115036231884058" />
         <entry key="app/src/main/res/layout/autocomplete_row.xml" value="0.2115036231884058" />
         <entry key="app/src/main/res/layout/dialog_progress.xml" value="0.2115036231884058" />
         <entry key="app/src/main/res/layout/fragment_error.xml" value="0.18177083333333333" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.2115036231884058" />
-        <entry key="app/src/main/res/layout/fragment_single_asset.xml" value="0.18177083333333333" />
+        <entry key="app/src/main/res/layout/fragment_single_asset.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_user_assets.xml" value="0.23777173913043478" />
         <entry key="app/src/main/res/layout/single_asset_toolbar.xml" value="0.18177083333333333" />
       </map>

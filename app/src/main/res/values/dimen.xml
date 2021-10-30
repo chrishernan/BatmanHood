@@ -48,7 +48,7 @@
 
 
     //radio button dimensions
-    <dimen name="radio_button_single_user_fragment_size">68dp</dimen>
+    <dimen name="radio_button_single_user_fragment_size">65dp</dimen>
 
     //toolbar height
     <dimen name="toolbar_height">50dp</dimen>

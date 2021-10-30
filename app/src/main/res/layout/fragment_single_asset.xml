@@ -93,7 +93,7 @@
 
         <RadioButton
             android:id="@+id/one_day_radio_button"
-            android:layout_width="70dp"
+            android:layout_width="@dimen/radio_button_single_user_fragment_size"
             android:layout_height="match_parent"
             android:button="@null"
             android:background="@drawable/range_button_unselected_rounded"
