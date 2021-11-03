@@ -2,15 +2,15 @@
     <!-- Base application theme. -->
     <style name="Theme.BatmanHood.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/color_for_stock_above_open</item>
-        <item name="colorPrimaryVariant">@color/color_for_stock_below_open</item>
+        <item name="colorPrimary">@color/batman_yellow</item>
+        <item name="colorPrimaryVariant">@color/batman_blue</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/night_gray</item>
-        <item name="colorSecondaryVariant">@color/dusk_gray</item>
+        <item name="colorSecondary">@color/batman_beige</item>
+        <item name="colorSecondaryVariant">@color/gray</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorOnPrimary</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/black</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>

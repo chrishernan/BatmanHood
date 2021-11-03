@@ -296,9 +296,5 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         return currentUserID
     }
 }
-
-sealed class FirebaseAuthUserState
-data class userSignedIn(val user: FirebaseUser) : FirebaseAuthUserState()
-object UserSignedOut : FirebaseAuthUserState()
-object UserSignedIn : FirebaseAuthUserState()
+ 
 

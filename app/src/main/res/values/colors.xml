@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="batman_yellow">#fdff00</color>
-    <color name="mustard_yellow">#988829</color>
+    <color name="batman_beige">#ffeac9</color>
     <color name="night_gray">#242424</color>
     <color name="dusk_gray">#282e3c</color>
     <color name="gray">#505c7c</color>
+    <color name="batman_blue">#0fc3ff</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
