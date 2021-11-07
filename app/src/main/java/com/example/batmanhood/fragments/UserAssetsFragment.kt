@@ -1,7 +1,7 @@
 package com.example.batmanhood.fragments
 
-import android.graphics.Color
-import android.os.Build
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.*
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -17,10 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.batmanhood.R
 import com.example.batmanhood.activities.MainActivity
 import com.example.batmanhood.adapters.AssetRecyclerViewAdapter
-import com.example.batmanhood.adapters.AutoCompleteAssetAdapter
-import com.example.batmanhood.models.AutofillCompany
 import com.example.batmanhood.utils.MarginItemDecoration
-import com.example.batmanhood.utils.daySoFarTradingRatio
 import com.example.batmanhood.utils.safeLetThree
 import com.example.batmanhood.viewModels.UserProfileViewModel
 import kotlinx.android.synthetic.main.asset_recycler_view_row.*
@@ -34,6 +30,8 @@ import timber.log.Timber
  */
 class UserAssetsFragment : Fragment(), AssetRecyclerViewAdapter.OnAssetListener {
     private val viewModel : UserProfileViewModel by activityViewModels()
+    lateinit var renderingAssetAdapter : AssetRecyclerViewAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,12 +63,12 @@ class UserAssetsFragment : Fragment(), AssetRecyclerViewAdapter.OnAssetListener 
             (activity as MainActivity).searchFragment()
         }
 
-        val renderingAssetAdapter =
+        renderingAssetAdapter =
             safeLetThree(
-                    viewModel.currentUserStockList.value?.data,
-                    viewModel.listOfUserStockHistoricalPrices.value?.data,
-                    viewModel.altUser.value?.data?.stock_list)
-            { it1, it2, it3 -> AssetRecyclerViewAdapter(it1,it2,it3,this) }
+                viewModel.currentUserStockList.value?.data,
+                viewModel.listOfUserStockHistoricalPrices.value?.data,
+                viewModel.altUser.value?.data?.stock_list)
+            { it1, it2, it3 -> AssetRecyclerViewAdapter(it1,it2,it3,this) } !!
         asset_recycler_view.apply {
             layoutManager = LinearLayoutManager(this.context)
             adapter = renderingAssetAdapter
@@ -118,8 +116,29 @@ class UserAssetsFragment : Fragment(), AssetRecyclerViewAdapter.OnAssetListener 
         viewModel.altUser.value?.data?.stock_list?.get(position)?.let { (activity as MainActivity).singleAssetFragment(it) }
     }
 
+    /**
+     * removes asset viewModel and creates dialog
+     */
     override fun onLongAssetClick(view: View?, position: Int) {
-        TODO("Not yet implemented")
+        Timber.e("In onLongClick Method for fragment => $position and context => $context")
+        var builder : AlertDialog.Builder = AlertDialog.Builder(activity)
+        builder.setCancelable(true)
+        builder.setTitle("Delete asset")
+        builder.setMessage("Would you like to delete this asset from your list?")
+        builder.setPositiveButton("yes", DialogInterface.OnClickListener{ dialog, id ->
+            //remove asset from Firebase and from User Object and historical data
+            var assetToRemove= viewModel.altUser.value?.data?.stock_list?.get(position)?.toUpperCase()
+            viewModel.removeAssetFromUser(assetToRemove)
+            //remove from recyclerview
+            renderingAssetAdapter.removeItem(assetToRemove,position)
+            dialog.cancel()
+        })
+        builder.setNegativeButton("no", DialogInterface.OnClickListener{ dialog, id ->
+            dialog.cancel()
+        })
+        var alert = builder.create()
+        alert.show()
+
     }
 
 }

@@ -44,7 +44,6 @@ class singleAssetFragment : Fragment() {
                 (activity as MainActivity).slideInUserAssetsFragment()
             }
         })
-        //todo make it so that exception is thrown if param1 is null
         arguments?.let {
             stockSymbol = it.getString("symbol")
         }

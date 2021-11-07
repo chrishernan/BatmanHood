@@ -1,6 +1,5 @@
 package com.example.batmanhood.viewModels
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.batmanhood.IO.StockAndIndexApiHelper
 import com.example.batmanhood.IO.database.FirestoreClass
@@ -13,7 +12,6 @@ import com.example.batmanhood.utils.Constants
 import com.example.batmanhood.utils.KeyType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import okhttp3.internal.wait
 import timber.log.Timber
 
 class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : ViewModel() {
@@ -173,7 +171,7 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
                 trimNullPricesOfAllRanges(hashMapOfOneStockHistoricalPrices)
             }
             val trimmedMap = mapTrimmingJob.await()
-            var trimmedOfNullPricesMap = mapTrimmingJob.await()
+            var trimmedOfNullPricesMap = trimmedMap
             listOfOneStockHistoricalPrices.postValue(Result(Result.Status.SUCCESS,
                 trimmedOfNullPricesMap,
                 "Success Retrieving All Historical data for one s"))
@@ -198,7 +196,6 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
             oneDaymap?.get(Constants.ONE_DAY)?.let { tempMap?.put(symbol, it) }
             listOfOneStockHistoricalPrices.value?.data?.let { tempMap?.putAll(it) }
 
-            //TODO test what happens if RealTimeStockQuzote returns some sort of null
             //wait for the async request for RealTimeStock data and merging with the overall list
             val newAssetRealTimeData = newAssetDataJob.await()
             if(newAssetRealTimeData != null) {
@@ -223,15 +220,17 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
         FirestoreClass(thisStockAndIndexApiHelper).addStockFromFirebaseUserStockList(symbol)
     }
 
-    fun removeAssetFromUser(symbol : String) {
+    fun removeAssetFromUser(symbol: String?) {
         removeNewAssetFromDatabase(symbol)
         altUser.value?.data?.stock_list?.remove(symbol)
         currentUserStockList.value?.data?.remove(symbol)
         listOfUserStockHistoricalPrices.value?.data?.remove(symbol)
     }
 
-    fun removeNewAssetFromDatabase(symbol : String) {
-        FirestoreClass(thisStockAndIndexApiHelper).removeStockFromFirebaseUserStockList(symbol)
+    private fun removeNewAssetFromDatabase(symbol: String?) {
+        if (symbol != null) {
+            FirestoreClass(thisStockAndIndexApiHelper).removeStockFromFirebaseUserStockList(symbol)
+        }
     }
 
     private fun addNewAssetDataIntoLiveDataObjects(
@@ -333,8 +332,10 @@ class UserProfileViewModel(stockAndIndexApiHelper: StockAndIndexApiHelper) : Vie
      *  Clears listOfOneStockHistoricalPrices LiveData Object to update with new item user has clicked
      */
     fun clearOneStockHistoricalDataLiveData() {
-        listOfOneStockHistoricalPrices = MutableLiveData<Result<LinkedHashMap<String,MutableList<HistoricalPrices>>>>()
-
+        if (listOfOneStockHistoricalPrices.value?.data?.isEmpty() == false) {
+            listOfOneStockHistoricalPrices =
+                MutableLiveData<Result<LinkedHashMap<String, MutableList<HistoricalPrices>>>>()
+        }
     }
 
 }

@@ -23,8 +23,6 @@ import java.util.concurrent.TimeUnit
 interface iexApiService {
     /**
      *  add latestPrice to field field so that you don't get the huge json with all information
-     *  todo probably add 52 week average,etc so that we can try and get as much info in one request
-     *  todo or maybe just get everything and filter if that's not possible
      */
     @GET("stable/stock/{symbol}/quote/{field}")
     suspend fun getRealTimeStockQuote(

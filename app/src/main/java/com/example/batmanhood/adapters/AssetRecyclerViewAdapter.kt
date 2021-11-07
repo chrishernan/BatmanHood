@@ -6,7 +6,6 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -17,7 +16,6 @@ import com.example.batmanhood.models.RealTimeStockQuote
 import com.example.batmanhood.utils.calculatePercentageDifference
 import com.example.batmanhood.utils.daySoFarTradingRatio
 import com.example.batmanhood.utils.onLayout
-import com.example.batmanhood.viewModels.UserProfileViewModel
 import com.robinhood.spark.SparkView
 import kotlinx.android.synthetic.main.asset_recycler_view_row.view.*
 import timber.log.Timber
@@ -46,15 +44,22 @@ class AssetRecyclerViewAdapter(
         val sparkyView : SparkView = view.findViewById(R.id.sparkview)
         val percentageTextView : TextView = view.findViewById(R.id.percentage_change_from_open)
 
+        /**
+         * calls on onAssetClick() in UserAssetsFragment
+         */
         override fun onClick(v: View?) {
             Timber.e("adapterPosition in onClick for ViewHolder => $adapterPosition")
             onAssetListener.onAssetClick(v,adapterPosition)
         }
 
+        /**
+         *  Calls onLongAssetClick function in UserAssets fragment to create dialog and
+         *  proceed based on the response.
+         */
         override fun onLongClick(v: View?): Boolean {
             Timber.e("adapterPosition in LongClick for ViewHolder => $adapterPosition")
             Timber.e("item => ${userStockListOrdered[adapterPosition]}")
-            removeItem(userStockListOrdered[adapterPosition], adapterPosition)
+            onAssetListener.onLongAssetClick(v, adapterPosition)
             return true
         }
 
@@ -72,14 +77,14 @@ class AssetRecyclerViewAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val filteredList : MutableList<Float> = mutableListOf()
-        val stockSymbolAtPosition = userStockListOrdered.get(position)
+        val stockSymbolAtPosition = userStockListOrdered[position]
         oneDayHistoricalData[stockSymbolAtPosition]?.forEach {
                 it.close?.let { it1 -> filteredList.add(it1) } }
-        Timber.e("StockSymbolAtPosition => $stockSymbolAtPosition")
+       // Timber.e("StockSymbolAtPosition => $stockSymbolAtPosition")
        // oneDayHistoricalData.get(position). { it.close?.let { it1 -> filteredList.add(it1) } }
         val rtQuoteAtPosition = realTimeStockData[stockSymbolAtPosition]
         val randomSparkAdapter = TestSparkAdapter(filteredList)
-        Timber.e("Before comparing filteredlist items => ${filteredList.size}")
+        //Timber.e("Before comparing filteredlist items => ${filteredList.size}")
         val isStockHigherThanAtOpen  = filteredList.last() >= filteredList.first()
 
         holder.sparkyView.onLayout {
@@ -126,11 +131,9 @@ class AssetRecyclerViewAdapter(
         }
     }
 
-
-    fun removeItem(symbol : String, position: Int) {
-        realTimeStockData.remove(symbol)
-        userStockListOrdered.removeAt(position)
-        notifyDataSetChanged()
+    fun removeItem(symbol: String?, position: Int) {
+        notifyItemRemoved(position)
+        Timber.e("removed asset $symbol at $position")
     }
 
     fun addItem(

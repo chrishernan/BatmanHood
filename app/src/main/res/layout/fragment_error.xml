@@ -7,8 +7,7 @@
     tools:context=".fragments.ErrorFragment"
 >
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+\    <TextView
         android:id="@+id/error_fragment_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

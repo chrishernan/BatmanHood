@@ -74,6 +74,9 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         return loggedInUser?.toObject(User::class.java)
     }
 
+    /**
+     * Removes stock from Firebase database
+     */
     fun removeStockFromFirebaseUserStockList(symbol: String) {
         val userRef = mFireStore.collection(Constants.USERS).document(getCurrentUserID())
         Timber.e("Stock to remove => $symbol")
@@ -82,6 +85,9 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
         Timber.e("Stock removed => $symbol")
     }
 
+    /**
+     * Adds stock to Firebase database
+     */
     fun addStockFromFirebaseUserStockList(symbol: String) {
         val userRef = mFireStore.collection(Constants.USERS).document(getCurrentUserID())
         userRef
@@ -270,7 +276,6 @@ class FirestoreClass(private val stockAndIndexFetcher: StockAndIndexApiHelper) {
     /**
      * This parses through all the RealTimeStockQuotes and returns only two argumens for now
      * @returns Stock symbol and current stock price
-     * todo figure out a way to make the database sort your assets alphabetically
      */
     private suspend fun parseUserStocks(listOfRealTimeQuotes : HashMap<String,HashMap<String,RealTimeStockQuote>> )
     : LinkedHashMap<String, RealTimeStockQuote> {
